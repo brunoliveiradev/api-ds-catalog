@@ -1,6 +1,6 @@
-package com.brunoliveiradev.dscatalog.resources;
+package com.brunoliveiradev.dscatalog.controllers;
 
-import com.brunoliveiradev.dscatalog.model.Category;
+import com.brunoliveiradev.dscatalog.dto.CategoryDto;
 import com.brunoliveiradev.dscatalog.services.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,17 +11,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/categories")
-public class CategoryResource {
+public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryResource(CategoryService categoryService) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> findAll(){
-        List<Category> list = categoryService.findAll();
+    public ResponseEntity<List<CategoryDto>> findAll(){
+        List<CategoryDto> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
 }

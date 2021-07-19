@@ -1,5 +1,6 @@
 package com.brunoliveiradev.dscatalog.services;
 
+import com.brunoliveiradev.dscatalog.dto.CategoryDto;
 import com.brunoliveiradev.dscatalog.model.Category;
 import com.brunoliveiradev.dscatalog.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
+    public List<CategoryDto> findAll() {
+        List<Category> categories = categoryRepository.findAll();
+        return CategoryDto.converterParaDto(categories);
     }
 }
