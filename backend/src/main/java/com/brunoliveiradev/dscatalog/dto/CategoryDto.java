@@ -3,8 +3,6 @@ package com.brunoliveiradev.dscatalog.dto;
 import com.brunoliveiradev.dscatalog.model.Category;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CategoryDto implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -39,10 +37,5 @@ public class CategoryDto implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    //Transformando de Category para CategoryDto
-    public static List<CategoryDto> converterParaDto(List<Category> categories) {
-        return categories.stream().map(CategoryDto::new).collect(Collectors.toList());
     }
 }
