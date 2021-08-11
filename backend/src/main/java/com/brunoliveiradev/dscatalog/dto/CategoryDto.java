@@ -2,12 +2,15 @@ package com.brunoliveiradev.dscatalog.dto;
 
 import com.brunoliveiradev.dscatalog.model.Category;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 public class CategoryDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
+
+    @NotBlank
     private String name;
 
     public CategoryDto() {
