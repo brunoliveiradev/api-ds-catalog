@@ -3,10 +3,11 @@ package com.brunoliveiradev.dscatalog.services;
 import com.brunoliveiradev.dscatalog.dto.CategoryDto;
 import com.brunoliveiradev.dscatalog.model.Category;
 import com.brunoliveiradev.dscatalog.repositories.CategoryRepository;
-import com.brunoliveiradev.dscatalog.services.exceptions.EntityNotFoundException;
+import com.brunoliveiradev.dscatalog.services.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,8 +31,9 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryDto findById(Long id) {
+        //findById faz uma consulta ao banco de dados
         Optional<Category> categoryOptional = categoryRepository.findById(id);
-        Category entity = categoryOptional.orElseThrow(() -> new EntityNotFoundException("Entity not found"));
+        Category entity = categoryOptional.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
         return new CategoryDto(entity);
     }
 
@@ -42,5 +44,19 @@ public class CategoryService {
         entity = categoryRepository.save(entity);
 
         return new CategoryDto(entity);
+    }
+
+    @Transactional
+    public CategoryDto update(CategoryDto updatedCategoryDto, Long id) {
+        // getOne não faz uma consulta desnecessária ao banco, ele cria algo temporário, sendo mais performático
+        try {
+            Category entity = categoryRepository.getOne(id);
+            entity.setName(updatedCategoryDto.getName());
+            entity = categoryRepository.save(entity);
+
+            return new CategoryDto(entity);
+        } catch (EntityNotFoundException exception) {
+            throw new ResourceNotFoundException("Id: " + id + " not found!");
+        }
     }
 }
