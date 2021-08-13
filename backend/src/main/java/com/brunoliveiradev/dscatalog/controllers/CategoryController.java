@@ -49,5 +49,10 @@ public class CategoryController {
         return ResponseEntity.ok().body(updatedCategoryDto);
     }
 
-
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        categoryService.delete(id);
+        // Código 204: Operação ok, com o corpo vazio
+        return ResponseEntity.noContent().build();
+    }
 }
