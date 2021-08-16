@@ -1,7 +1,10 @@
 package com.brunoliveiradev.dscatalog.services;
 
+import com.brunoliveiradev.dscatalog.dto.CategoryDto;
 import com.brunoliveiradev.dscatalog.dto.ProductDto;
+import com.brunoliveiradev.dscatalog.model.Category;
 import com.brunoliveiradev.dscatalog.model.Product;
+import com.brunoliveiradev.dscatalog.repositories.CategoryRepository;
 import com.brunoliveiradev.dscatalog.repositories.ProductRepository;
 import com.brunoliveiradev.dscatalog.services.exceptions.DataBaseException;
 import com.brunoliveiradev.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -19,9 +22,11 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Transactional(readOnly = true)
@@ -41,22 +46,18 @@ public class ProductService {
     @Transactional
     public ProductDto insert(ProductDto productDto) {
         Product entity = new Product();
-//        Acresentar os demais campos além do setName
-//        entity.setName(productDto.getName());
+        copyDtoToEntity(productDto, entity);
         entity = productRepository.save(entity);
-
         return new ProductDto(entity);
     }
 
     @Transactional
-    public ProductDto update(ProductDto updatedProductDto, Long id) {
+    public ProductDto update(ProductDto productDto, Long id) {
         // getOne não faz uma consulta desnecessária ao banco, ele cria algo temporário, sendo mais performático
         try {
             Product entity = productRepository.getOne(id);
-//             Acresentar os demais campos além do setName
-//            entity.setName(updatedProductDto.getName());
+            copyDtoToEntity(productDto, entity);
             entity = productRepository.save(entity);
-
             return new ProductDto(entity);
         } catch (EntityNotFoundException exception) {
             throw new ResourceNotFoundException("Id: " + id + " not found!");
@@ -71,6 +72,21 @@ public class ProductService {
 
         } catch (DataIntegrityViolationException exception) {
             throw new DataBaseException("Integrity violation");
+        }
+    }
+
+    private void copyDtoToEntity(ProductDto productDto, Product entity) {
+        entity.setName(productDto.getName());
+        entity.setDescription(productDto.getDescription());
+        entity.setDate(productDto.getDate());
+        entity.setImgUrl(productDto.getImgUrl());
+        entity.setPrice(productDto.getPrice());
+        //Acessa e limpa as categorias se houver na entidade
+        entity.getCategories().clear();
+
+        for (CategoryDto categoryDto : productDto.getCategories()) {
+            Category category = categoryRepository.getOne(categoryDto.getId());
+            entity.getCategories().add(category);
         }
     }
 }
